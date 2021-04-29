@@ -1,14 +1,14 @@
-if [ ! -d "./datasets/trans-1M-wobleu/" ]; then
+if [ ! -d "./datasets/trans-1M/" ]; then
     python ./split.py --use-num 1000000 \
-        --output-dir './datasets/trans-1M-wobleu/' \
-        --dataset 'trans-wobleu'
+        --output-dir './datasets/trans-1M/' \
+        --dataset 'trans'
 fi
 
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/encoder.json'
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/vocab.bpe'
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/dict.txt'
 
-TASK=ts-trans
+TASK=ts-newsela-newsela
 
 if [ "$1" != "no-preprocess" ]; then
     
@@ -21,7 +21,7 @@ if [ "$1" != "no-preprocess" ]; then
             python -m bpe.multiprocessing_bpe_encoder \
             --encoder-json ./bpe/encoder.json \
             --vocab-bpe ./bpe/vocab.bpe \
-            --inputs ./datasets/trans-1M-wobleu/trans-wobleu.${split}.${type} \
+            --inputs ./datasets/newsela/newsela.${split}.${type} \
             --outputs ./${TASK}/${split}.bpe.${type} \
             --workers 60 \
             --keep-empty;
@@ -45,14 +45,14 @@ fi
 
 # Fine-tuning
 
-TOTAL_NUM_UPDATES=40000
+TOTAL_NUM_UPDATES=10000
 WARMUP_UPDATES=500
 LR=3e-05
 MAX_TOKENS=2048
 UPDATE_FREQ=4
-BART_PATH=./models/bart.large/model.pt
+BART_PATH=./checkpoints/newsela/tran-1M/bart-large-pretrained/checkpoint10.pt
 
-CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python ./train.py ${TASK}-bin/ \
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python ./train_newsela.py ${TASK}-bin/ \
     --restore-file $BART_PATH  \
     --max-tokens $MAX_TOKENS  \
     --task translation \
@@ -72,10 +72,10 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python ./train.py ${TASK}-bin/ \
     --lr-scheduler polynomial_decay --lr $LR --total-num-update $TOTAL_NUM_UPDATES --warmup-updates $WARMUP_UPDATES \
     --update-freq $UPDATE_FREQ \
     --skip-invalid-size-inputs-valid-test \
-    --tensorboard-logdir "./logs/tensorboard/trans-wobleu/bart-large-pretrained/" \
-    --save-dir "./checkpoints/trans-wobleu/bart-large-pretrained/" \
+    --tensorboard-logdir "./logs/tensorboard/newsela/newsela-finetune/bart-large-pretrained/" \
+    --save-dir "./checkpoints/newsela/newsela-finetune/bart-large-pretrained/" \
     --find-unused-parameters \
     --bpe "gpt2" \
     --gpt2-encoder-json "./bpe/encoder.json" \
     --gpt2-vocab-bpe "./bpe/vocab.bpe" \
-    --max-epoch 15
+    --max-epoch 5 \

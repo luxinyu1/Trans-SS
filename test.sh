@@ -1,6 +1,7 @@
-python ./valid.py --model-name "transformer" \
-    --dataset-name "trans-wofkgl" \
+python ./test.py --model-name "bart-large-pretrained" \
+    --dataset-name "newsela/newsela-finetune" \
     --task-name "trans" \
+    --test-dataset 'newsela' \
     --eval-all-ckpt \
     --bpe "gpt2" \
     --gpt2-encoder-json "./bpe/encoder.json" \

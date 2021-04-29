@@ -98,6 +98,16 @@ def count_words_in_sentence(sentence):
     words_in_sent = [token for token in sent_tokenized if not is_punctuation(token)]
     return len(words_in_sent)
 
+def count_words_in_sentence_fr(sentence):
+    sent_tokenized = word_tokenize(sentence, language="french")
+    words_in_sent = [token for token in sent_tokenized if not is_punctuation(token)]
+    return len(words_in_sent)
+
+def count_words_in_sentence_es(sentence):
+    sent_tokenized = word_tokenize(sentence, language="spanish")
+    words_in_sent = [token for token in sent_tokenized if not is_punctuation(token)]
+    return len(words_in_sent)
+
 def sentence_fkf(sentence):
     sent_num = len(sent_tokenize(sentence))
     sent_tokenized = word_tokenize(sentence)
@@ -118,15 +128,7 @@ def syllables_de(word):
     last = ''
     word = word.lower()
     diphtongs = [
-        'au',
-        'ei',
-        'ai',
-        'eu',
-        'äu',
-        'ie',
-        'aa',
-        'ee',
-        'ui'
+        'au','ei','ai','eu','äu','ie','aa','ee','ui'
     ]
     for char in word:
         if char in "aeiouäüö":
@@ -160,13 +162,7 @@ def syllables_fr(word):
     word = word.lower()
     last = ''
     diphtongs = [
-        'ei',
-        'ai',
-        'au',
-        'ou',
-        'oû',
-        'eu',
-        'æu'
+        'ei','ai','au','ou','oû','eu','æu'
     ]
     for char in word:
         if char in "iîïaàâeéèêuûoôy":
@@ -190,7 +186,41 @@ def sentence_fkf_fr(sentence):
         syllables_all += syllables_fr(word)
     avg_syllables_per_word = syllables_all / _words_in_sent
     avg_words_per_sentence = _words_in_sent / sent_num
-    fkf = 207 - 73.6*avg_syllables_per_word - 1.015*avg_words_per_sentence
+    fkf = 207.0 - 73.6*avg_syllables_per_word - 1.015*avg_words_per_sentence
+    return fkf
+
+@lru_cache(maxsize=100000)
+def syllables_es(word):
+    # every syllable either has a vowel or a diphtong
+    num_syllables = 0
+    word = word.lower()
+    last = ''
+    diphtongs = [
+        'ai', 'ei','oi','au','eu','ou','ui','ia','ie','io','iu','ua','ue','uo'
+    ]
+    for char in word:
+        if char in "iaeéuoy":
+            num_syllables += 1
+            if last:
+                if last+char in diphtongs:
+                    num_syllables -= 1
+            last = char
+        else:
+            last = ''
+            
+    return num_syllables
+
+def sentence_fkf_es(sentence):
+    sent_num = len(sent_tokenize(sentence, language="spanish"))
+    sent_tokenized = word_tokenize(sentence, language="spanish")
+    words_in_sent = [token for token in sent_tokenized if not is_punctuation(token)]
+    _words_in_sent = len(words_in_sent)
+    syllables_all = 0
+    for word in words_in_sent:
+        syllables_all += syllables_es(word)
+    avg_syllables_per_word = syllables_all / _words_in_sent
+    avg_words_per_sentence = _words_in_sent / sent_num
+    fkf = 206.835 - 60.0*avg_syllables_per_word - 1.02*avg_words_per_sentence
     return fkf
     
 def get_word2freq():
@@ -206,16 +236,39 @@ def get_word2freq():
 def get_freq(word):
     return get_word2freq.get(word)
 
-def get_corpus_word_num(corpus):
+def get_corpus_vocab_size(corpus):
     words = []
     for line in corpus:
-        word_tokens = word_tokenize(line)
+        word_tokens = word_tokenize(line, language="english")
         for word in word_tokens:
-            if word not in words:
-                words.append(word)
+            _word = word.lower()
+            if _word not in words and re.match(r"[a-zA-Z]+", word):
+                words.append(_word)
     stop_words = set(stopwords.words('english'))
-    filtered_words = [w for w in words if w not in stop_words]
-    return len(filtered_words)
+    vocabs = set(words) - set(stop_words)
+    return len(vocabs)
+
+def get_corpus_vocab_size_fr(corpus):
+    words = []
+    for line in corpus:
+        word_tokens = word_tokenize(line, language="french")
+        for word in word_tokens:
+            if word not in words and re.match(r"[a-zA-ZÀ-ÿ]+", word):
+                words.append(word)
+    stop_words = set(stopwords.words('french'))
+    vocabs = [w for w in words if w not in stop_words]
+    return len(vocabs)
+
+def get_corpus_vocab_size_es(corpus):
+    words = []
+    for line in corpus:
+        word_tokens = word_tokenize(line, language="spanish")
+        for word in word_tokens:
+            if word not in words and re.match(r"[a-zA-ZÀ-ÿ]+", word):
+                words.append(word)
+    stop_words = set(stopwords.words('spanish'))
+    vocabs = [w for w in words if w not in stop_words]
+    return len(vocabs)
 
 def get_avg_token_per_sentence(corpus):
     total_line = 0
@@ -224,4 +277,22 @@ def get_avg_token_per_sentence(corpus):
     for line in corpus:
         total_line += 1
         total_words += count_words_in_sentence(line)
+    return total_words*1.0 / total_line*1.0
+
+def get_avg_token_per_sentence_fr(corpus):
+    total_line = 0
+    total_words = 0
+    stop_words = set(stopwords.words('french'))
+    for line in corpus:
+        total_line += 1
+        total_words += count_words_in_sentence_fr(line)
+    return total_words*1.0 / total_line*1.0
+
+def get_avg_token_per_sentence_es(corpus):
+    total_line = 0
+    total_words = 0
+    stop_words = set(stopwords.words('spanish'))
+    for line in corpus:
+        total_line += 1
+        total_words += count_words_in_sentence_es(line)
     return total_words*1.0 / total_line*1.0
