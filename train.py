@@ -481,10 +481,10 @@ def sari_validate(cfg: DictConfig, trainer: Trainer, task: tasks.FairseqTask, ep
 
 
     ref_filepaths = [get_data_filepath('turkcorpus', 'valid', 'simple.turk', i) for i in range(8)]
-    turk_scores = get_all_scores(orig_sents=read_lines(complex_filepath), sys_sents=read_lines(pred_filepath), refs_sents=[read_lines(ref_filepath) for ref_filepath in ref_filepaths])
+    turk_scores = get_all_scores(orig_sents=read_lines(complex_filepath), sys_sents=read_lines(pred_filepath), refs_sents=[read_lines(ref_filepath) for ref_filepath in ref_filepaths], lowercase=True)
     turk_sari = turk_scores["SARI"]
     ref_filepaths = [get_data_filepath('asset', 'valid', 'simp', i) for i in range(10)]
-    asset_scores = get_all_scores(orig_sents=read_lines(complex_filepath), sys_sents=read_lines(pred_filepath), refs_sents=[read_lines(ref_filepath) for ref_filepath in ref_filepaths])
+    asset_scores = get_all_scores(orig_sents=read_lines(complex_filepath), sys_sents=read_lines(pred_filepath), refs_sents=[read_lines(ref_filepath) for ref_filepath in ref_filepaths], lowercase=True)
     asset_sari = asset_scores["SARI"]
     logger.info("[Epoch {}][turk] {}".format(epoch_itr.epoch, turk_scores))
     logger.info("[Epoch {}][asset] {}".format(epoch_itr.epoch, asset_scores))

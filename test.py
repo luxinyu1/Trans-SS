@@ -9,6 +9,7 @@ import argparse
 import logging
 from pathlib import Path
 import numpy as np
+from shutil import copyfile
 
 from access.utils.paths import CHECKPOINT_DIR, REPO_DIR
 from access.utils.utils import get_data_filepath, get_dataset_dir, read_lines, create_directory_or_skip
@@ -56,16 +57,19 @@ def main():
                         help="Possible choices: gpt2, bytes, sentencepiece, subword_nmt, byte_bpe, characters, bert, fastbpe, hf_byte_bpe")
 
     ## Other parameters
+    parser.add_argument("--source-lang",
+                        default="src",
+                        type=str,
+                        required=False)
+    parser.add_argument("--target-lang",
+                        default="dst",
+                        type=str,
+                        required=False)
     parser.add_argument("--test-dataset", 
                         default="turk", 
                         type=str,
                         required=False,
                         help="The name of test dataset.")
-    parser.add_argument("--fairseq-task",
-                        default="translation",
-                        type=str,
-                        required=False,
-                        help="The name of fairseq task.")
     parser.add_argument("--do-lower-case",
                         action='store_true',
                         help="Set this flag if you are using an uncased model.")
@@ -105,11 +109,19 @@ def main():
     parser.add_argument("--gpt2-vocab-bpe",
                         default=None,
                         type=str)
-#     parser.add_argument("--seed", 
-#                         type=int, 
-#                         default=None,
-#                         help="Random seed for testing.")
-    
+    parser.add_argument("--fairseq-task",
+                        default="translation",
+                        type=str,
+                        required=False,
+                        help="The name of fairseq task.")
+    parser.add_argument("--sentencepiece-model",
+                        type=str,
+                        required=False,
+                        help="The path to mBART sentencepiece model.")
+    parser.add_argument("--bpe-codes",
+                        type=str,
+                        required=False,
+                        help="The path to fastBPE bpecodes.")
 
     args = parser.parse_args()
     
@@ -121,6 +133,10 @@ def main():
     weight_dir = Path(CHECKPOINT_DIR) / args.dataset_name / args.model_name
 #     weight_dir = Path("/home/lxy/Projects/checkpoints") / args.dataset_name / args.model_name
     report_dir = weight_dir / 'html_reports'
+    pred_dir = weight_dir / 'pred'
+    
+    with create_directory_or_skip(pred_dir):
+        pass
     
     log_path = weight_dir / 'val.log'
     
@@ -132,6 +148,8 @@ def main():
             ckpt_list.remove('val.log')
         if os.path.isdir(report_dir):
             ckpt_list.remove('html_reports')
+        if os.path.isdir(pred_dir):
+            ckpt_list.remove('pred')
         if args.eval_all_ckpt:
             ckpt_list.remove('checkpoint_best.pt')
             ckpt_list.remove('checkpoint_last.pt')
@@ -143,9 +161,9 @@ def main():
         raise ValueError("Please check model_name and dataset_name!")
     
     args.data = str(REPO_DIR) + "/ts-" + args.task_name + "-bin/"
-    args.task = "translation"
-    args.source_lang = "src"
-    args.target_lang = "dst"
+    args.task = args.fairseq_task
+    if args.model_name == "mBART":
+        args.langs = "ar_AR,cs_CZ,de_DE,en_XX,es_XX,et_EE,fi_FI,fr_XX,gu_IN,hi_IN,it_IT,ja_XX,kk_KZ,ko_KR,lt_LT,lv_LV,my_MM,ne_NP,nl_XX,ro_RO,ru_RU,si_LK,tr_TR,vi_VN,zh_CN"
     
     use_cuda = torch.cuda.is_available() and not args.no_cuda
     fp16 = args.fp16
@@ -159,6 +177,10 @@ def main():
                 complex_filepath = get_data_filepath('turkcorpus', 'test', 'complex')
             elif args.test_dataset == 'newsela':
                 complex_filepath = get_data_filepath('newsela', 'test', 'src')
+            elif args.test_dataset == 'alector':
+                complex_filepath = get_data_filepath('alector', 'test', 'complex')
+            elif args.test_dataset == 'simplext':
+                complex_filepath = get_data_filepath('simplext', 'test', 'complex')
             pred_filepath = tempfile.mkstemp()[1]
             
             """Loads an ensemble of models.
@@ -279,6 +301,8 @@ def main():
                             )
                             detok_hypo_str = decode_fn(hypo_str)
                             f_pred.write(detok_hypo_str + '\n')
+                
+                copyfile(pred_filepath, pred_dir / Path(str(e)+".txt"))
 
                 # update running id_ counter
                 start_id += len(inputs)
@@ -312,6 +336,32 @@ def main():
                 logger.info("[Epoch {}][newsela] {}".format(e, newsela_scores))
                 with open(log_path,'a+',encoding='utf-8') as f_log:
                     f_log.write("[Epoch {}][newsela] {}\n".format(e, newsela_scores))
+            
+            elif args.test_dataset == 'alector':
+                
+                ref_filepaths = [get_data_filepath('alector', 'test', 'simple')]
+                alector_scores = get_all_scores(orig_sents=read_lines(complex_filepath), sys_sents=read_lines(pred_filepath), refs_sents=[read_lines(ref_filepath) for ref_filepath in ref_filepaths], lowercase=True)
+                report = get_html_report(orig_sents=read_lines(complex_filepath), sys_sents=read_lines(pred_filepath), refs_sents=[read_lines(ref_filepath) for ref_filepath in ref_filepaths], test_set=args.test_dataset)
+                with create_directory_or_skip(report_dir):
+                    pass
+                with open(report_dir / (str(e)+'.html'), 'w+', encoding='utf-8') as f_html:
+                    f_html.write(report + '\n')
+                logger.info("[Epoch {}][alector] {}".format(e, alector_scores))
+                with open(log_path,'a+',encoding='utf-8') as f_log:
+                    f_log.write("[Epoch {}][alector] {}\n".format(e, alector_scores))
+                    
+            elif args.test_dataset == 'simplext':
+                
+                ref_filepaths = [get_data_filepath('simplext', 'test', 'simple')]
+                simplext_scores = get_all_scores(orig_sents=read_lines(complex_filepath), sys_sents=read_lines(pred_filepath), refs_sents=[read_lines(ref_filepath) for ref_filepath in ref_filepaths], lowercase=True)
+                report = get_html_report(orig_sents=read_lines(complex_filepath), sys_sents=read_lines(pred_filepath), refs_sents=[read_lines(ref_filepath) for ref_filepath in ref_filepaths], test_set=args.test_dataset)
+                with create_directory_or_skip(report_dir):
+                    pass
+                with open(report_dir / (str(e)+'.html'), 'w+', encoding='utf-8') as f_html:
+                    f_html.write(report + '\n')
+                logger.info("[Epoch {}][simplext] {}".format(e, simplext_scores))
+                with open(log_path,'a+',encoding='utf-8') as f_log:
+                    f_log.write("[Epoch {}][simplext] {}\n".format(e, simplext_scores))
                                                    
         torch.cuda.empty_cache()
 

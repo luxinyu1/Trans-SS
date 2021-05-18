@@ -1,7 +1,7 @@
-if [ ! -d "./datasets/trans-1M-wofkgl/" ]; then
-    python ./split.py --use-num 1000000 \
-        --output-dir './datasets/trans-1M-wofkgl/' \
-        --dataset 'trans-wofkgl'
+if [ ! -d "./datasets/trans-wobleu/" ]; then
+    python ./split.py --output-dir './datasets/trans-wobleu/' \
+        --dataset 'trans-wobleu' \
+        --using-full
 fi
 
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/encoder.json'
@@ -21,7 +21,7 @@ if [ "$1" != "no-preprocess" ]; then
             python -m bpe.multiprocessing_bpe_encoder \
             --encoder-json ./bpe/encoder.json \
             --vocab-bpe ./bpe/vocab.bpe \
-            --inputs ./datasets/trans-1M-wofkgl/trans-wofkgl.${split}.${type} \
+            --inputs ./datasets/trans-wobleu/trans-wobleu.${split}.${type} \
             --outputs ./${TASK}/${split}.bpe.${type} \
             --workers 60 \
             --keep-empty;
@@ -72,8 +72,8 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python ./train.py ${TASK}-bin/ \
     --lr-scheduler polynomial_decay --lr $LR --total-num-update $TOTAL_NUM_UPDATES --warmup-updates $WARMUP_UPDATES \
     --update-freq $UPDATE_FREQ \
     --skip-invalid-size-inputs-valid-test \
-    --tensorboard-logdir "./logs/tensorboard/trans-wofkgl/bart-large-pretrained/" \
-    --save-dir "./checkpoints/trans-wofkgl/bart-large-pretrained/" \
+    --tensorboard-logdir "./logs/tensorboard/trans-wobleu/bart-large-pretrained/" \
+    --save-dir "./checkpoints/trans-wobleu/bart-large-pretrained/" \
     --find-unused-parameters \
     --bpe "gpt2" \
     --gpt2-encoder-json "./bpe/encoder.json" \

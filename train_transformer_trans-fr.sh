@@ -1,7 +1,7 @@
-if [ ! -d "./datasets/trans-fr-1M/" ]; then
-    python ./split.py --use-num 1000000 \
-        --output-dir './datasets/trans-fr-1M/' \
-        --dataset 'trans_fr'
+if [ ! -d "./datasets/trans-fr/" ]; then
+    python ./split.py --output-dir './datasets/trans-fr/' \
+        --dataset 'trans_fr' \
+        --using-full
 fi
 
 TASK=ts-trans-fr
@@ -13,7 +13,7 @@ if [ "$1" != "no-preprocess" ]; then
         mkdir ${TASK}
     fi
     
-    ./fastBPE/fast learnbpe 50000 ./datasets/trans-fr-1M/trans_fr.train.src ./datasets/trans-fr-1M/trans_fr.train.dst > ./bpe/bpecodes50000-fr
+    ./fastBPE/fast learnbpe 50000 ./datasets/trans-fr/trans_fr.train.src ./datasets/trans-fr/trans_fr.train.dst > ./bpe/bpecodes50000-fr
     
     for split in 'train' 'test' 'valid'; do
         for type in 'src' 'dst'; do

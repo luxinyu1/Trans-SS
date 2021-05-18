@@ -1,7 +1,7 @@
 if [ ! -d "./datasets/para/" ]; then
-    python ./split.py --use-num 1000000 \
-        --output-dir './datasets/para/' \
-        --dataset 'para'
+    python ./split.py --output-dir './datasets/para/' \
+        --dataset 'para' \
+        --using-full
 fi
 
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/encoder.json'

@@ -1,14 +1,14 @@
-if [ ! -d "./datasets/trans-10K/" ]; then
-    python ./split.py --use-num 10000 \
-        --output-dir './datasets/trans-10K/' \
-        --dataset 'trans'
+if [ ! -d "./datasets/wikilarge-1K/" ]; then
+    python ./split.py --use-num 1000 \
+        --output-dir './datasets/wikilarge-1K/' \
+        --dataset 'wikilarge'
 fi
 
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/encoder.json'
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/vocab.bpe'
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/dict.txt'
 
-TASK=ts-trans
+TASK=ts-wikilarge
 
 if [ "$1" != "no-preprocess" ]; then
     
@@ -21,7 +21,7 @@ if [ "$1" != "no-preprocess" ]; then
             python -m bpe.multiprocessing_bpe_encoder \
             --encoder-json ./bpe/encoder.json \
             --vocab-bpe ./bpe/vocab.bpe \
-            --inputs ./datasets/trans-10K/trans.${split}.${type} \
+            --inputs ./datasets/wikilarge-1K/wikilarge.${split}.${type} \
             --outputs ./${TASK}/${split}.bpe.${type} \
             --workers 60 \
             --keep-empty;
@@ -72,10 +72,9 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python ./train.py ${TASK}-bin/ \
     --lr-scheduler polynomial_decay --lr $LR --total-num-update $TOTAL_NUM_UPDATES --warmup-updates $WARMUP_UPDATES \
     --update-freq $UPDATE_FREQ \
     --skip-invalid-size-inputs-valid-test \
-    --tensorboard-logdir "./logs/tensorboard/trans-10K/bart-large-pretrained/" \
-    --save-dir "./checkpoints/trans-10K/bart-large-pretrained/" \
+    --tensorboard-logdir "./logs/tensorboard/wikilarge-1K/bart-large-pretrained/" \
+    --save-dir "./checkpoints/wikilarge-1K/bart-large-pretrained/" \
     --find-unused-parameters \
     --bpe "gpt2" \
     --gpt2-encoder-json "./bpe/encoder.json" \
-    --gpt2-vocab-bpe "./bpe/vocab.bpe" \
-    --max-epoch 15
+    --gpt2-vocab-bpe "./bpe/vocab.bpe"

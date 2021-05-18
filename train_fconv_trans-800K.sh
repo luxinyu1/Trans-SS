@@ -1,6 +1,6 @@
-if [ ! -d "./datasets/trans-1M/" ]; then
-    python ./split.py --use-num 1000000 \
-        --output-dir './datasets/trans-1M/' \
+if [ ! -d "./datasets/trans-800K/" ]; then
+    python ./split.py --use-num 800000 \
+        --output-dir './datasets/trans-800K/' \
         --dataset 'trans'
 fi
 
@@ -21,7 +21,7 @@ if [ "$1" != "no-preprocess" ]; then
             python -m bpe.multiprocessing_bpe_encoder \
             --encoder-json ./bpe/encoder.json \
             --vocab-bpe ./bpe/vocab.bpe \
-            --inputs ./datasets/trans-1M/trans.${split}.${type} \
+            --inputs ./datasets/trans-800K/trans.${split}.${type} \
             --outputs ./${TASK}/${split}.bpe.${type} \
             --workers 60 \
             --keep-empty;
@@ -53,8 +53,8 @@ CUDA_VISIBLE_DEVICES=0 python ./train.py ${TASK}-bin/ \
     --source-lang "src" \
     --target-lang "dst" \
     --bpe "gpt2" \
-    --arch fconv_wmt_en_de --save-dir "./checkpoints/trans-1M/fconv/" \
-    --tensorboard-logdir "./logs/tensorboard/trans-1M/fconv/" \
+    --arch fconv_wmt_en_de --save-dir "./checkpoints/trans-800K/fconv/" \
+    --tensorboard-logdir "./logs/tensorboard/trans-800K/fconv/" \
     --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
     --dropout 0.1 \
     --optimizer nag --clip-norm 0.1 \

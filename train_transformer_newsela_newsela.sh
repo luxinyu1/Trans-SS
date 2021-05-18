@@ -8,7 +8,7 @@ wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/encoder.json
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/vocab.bpe'
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/dict.txt'
 
-TASK=ts-trans
+TASK=ts-newsela-newsela
 
 if [ "$1" != "no-preprocess" ]; then
     
@@ -21,7 +21,7 @@ if [ "$1" != "no-preprocess" ]; then
             python -m bpe.multiprocessing_bpe_encoder \
             --encoder-json ./bpe/encoder.json \
             --vocab-bpe ./bpe/vocab.bpe \
-            --inputs ./datasets/trans-1M/trans.${split}.${type} \
+            --inputs ./datasets/newsela/newsela.${split}.${type} \
             --outputs ./${TASK}/${split}.bpe.${type} \
             --workers 60 \
             --keep-empty;
@@ -43,26 +43,29 @@ if [ "$1" != "no-preprocess" ]; then
     
 fi
 
-# Training
+# Fine-tuning
 
-LR=0.0005
-MAX_TOKENS=12000
+TOTAL_NUM_UPDATES=80000
+WARMUP_UPDATES=1000
+LR=3e-04
+MAX_TOKENS=2048
 UPDATE_FREQ=1
-MAX_UPDATE=45000
-WARMUP_UPDATES=300
 
-CUDA_VISIBLE_DEVICES=0 python ./train.py ${TASK}-bin/ \
-    --source-lang "src" \
-    --target-lang "dst" \
-    --bpe "gpt2" \
-    --arch lstm --save-dir "./checkpoints/trans-1M/lstm/" \
-    --tensorboard-logdir "./logs/tensorboard/trans-1M/lstm/" \
-    --dropout 0.1 \
-    --optimizer adam --lr ${LR} \
+# Training
+CUDA_VISIBLE_DEVICES=0 python ./train_newsela.py ${TASK}-bin/ \
+    --lr $LR --clip-norm 0.1 --dropout 0.1 --max-tokens $MAX_TOKENS \
     --lr-scheduler polynomial_decay \
-    --total-num-update ${MAX_UPDATE} --warmup-updates ${WARMUP_UPDATES} \
+    --total-num-update $TOTAL_NUM_UPDATES --warmup-updates $WARMUP_UPDATES \
     --max-epoch 15 \
-    --validate-interval 1 \
-    --max-tokens ${MAX_TOKENS} \
+    --truncate-source \
+    --layernorm-embedding \
+    --share-all-embeddings \
+    --share-decoder-input-output-embed \
+    --reset-optimizer --reset-dataloader --reset-meters \
+    --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
+    --arch transformer --save-dir './checkpoints/newsela/transformer/' --optimizer adam \
+    --tensorboard-logdir "./logs/tensorboard/newsela/transformer/" \
+    --skip-invalid-size-inputs-valid-test \
+    --bpe "gpt2" \
     --gpt2-encoder-json "./bpe/encoder.json" \
     --gpt2-vocab-bpe "./bpe/vocab.bpe"

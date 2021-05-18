@@ -1,7 +1,7 @@
-if [ ! -d "./datasets/trans-1M-wobleu/" ]; then
-    python ./split.py --use-num 1000000 \
-        --output-dir './datasets/trans-1M-wobleu/' \
-        --dataset 'trans-wobleu'
+if [ ! -d "./datasets/trans-800K/" ]; then
+    python ./split.py --use-num 800000 \
+        --output-dir './datasets/trans-800K/' \
+        --dataset 'trans'
 fi
 
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/encoder.json'
@@ -21,7 +21,7 @@ if [ "$1" != "no-preprocess" ]; then
             python -m bpe.multiprocessing_bpe_encoder \
             --encoder-json ./bpe/encoder.json \
             --vocab-bpe ./bpe/vocab.bpe \
-            --inputs ./datasets/trans-1M-wobleu/trans-wobleu.${split}.${type} \
+            --inputs ./datasets/trans-800K/trans.${split}.${type} \
             --outputs ./${TASK}/${split}.bpe.${type} \
             --workers 60 \
             --keep-empty;
@@ -43,27 +43,26 @@ if [ "$1" != "no-preprocess" ]; then
     
 fi
 
-TOTAL_NUM_UPDATES=240000
-WARMUP_UPDATES=1000
-LR=3e-04
-MAX_TOKENS=2048
-UPDATE_FREQ=1
-
 # Training
+
+LR=0.0005
+MAX_TOKENS=12000
+UPDATE_FREQ=1
+MAX_UPDATE=45000
+WARMUP_UPDATES=300
+
 CUDA_VISIBLE_DEVICES=0 python ./train.py ${TASK}-bin/ \
-    --lr $LR --clip-norm 0.1 --dropout 0.1 --max-tokens $MAX_TOKENS \
-    --lr-scheduler polynomial_decay \
-    --total-num-update $TOTAL_NUM_UPDATES --warmup-updates $WARMUP_UPDATES \
-    --max-epoch 15 \
-    --truncate-source \
-    --layernorm-embedding \
-    --share-all-embeddings \
-    --share-decoder-input-output-embed \
-    --reset-optimizer --reset-dataloader --reset-meters \
-    --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
-    --arch transformer --save-dir './checkpoints/trans-wobleu/transformer/' --optimizer adam \
-    --tensorboard-logdir "./logs/tensorboard/trans-wobleu/transformer/" \
-    --skip-invalid-size-inputs-valid-test \
+    --source-lang "src" \
+    --target-lang "dst" \
     --bpe "gpt2" \
+    --arch lstm --save-dir "./checkpoints/trans-800K/lstm/" \
+    --tensorboard-logdir "./logs/tensorboard/trans-800K/lstm/" \
+    --dropout 0.1 \
+    --optimizer adam --lr ${LR} \
+    --lr-scheduler polynomial_decay \
+    --total-num-update ${MAX_UPDATE} --warmup-updates ${WARMUP_UPDATES} \
+    --max-epoch 15 \
+    --validate-interval 1 \
+    --max-tokens ${MAX_TOKENS} \
     --gpt2-encoder-json "./bpe/encoder.json" \
     --gpt2-vocab-bpe "./bpe/vocab.bpe"

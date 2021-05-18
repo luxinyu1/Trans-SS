@@ -1,8 +1,9 @@
-python ./test.py --model-name "bart-large-pretrained" \
-    --dataset-name "newsela/newsela-finetune" \
-    --task-name "trans" \
-    --test-dataset 'newsela' \
+python ./test.py --model-name "mBART" \
+    --source-lang src --target-lang dst \
+    --dataset-name "trans-fr" \
+    --task-name "trans-fr-mBART" \
+    --fairseq-task "translation_from_pretrained_bart" \
+    --test-dataset 'alector' \
     --eval-all-ckpt \
-    --bpe "gpt2" \
-    --gpt2-encoder-json "./bpe/encoder.json" \
-    --gpt2-vocab-bpe "./bpe/vocab.bpe"
+    --bpe 'sentencepiece' \
+    --sentencepiece-model ./models/mbart.cc25.v2/sentence.bpe.model \

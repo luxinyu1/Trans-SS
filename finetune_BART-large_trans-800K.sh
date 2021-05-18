@@ -1,6 +1,6 @@
-if [ ! -d "./datasets/trans-10K/" ]; then
-    python ./split.py --use-num 10000 \
-        --output-dir './datasets/trans-10K/' \
+if [ ! -d "./datasets/trans-800K/" ]; then
+    python ./split.py --use-num 800000 \
+        --output-dir './datasets/trans-800K/' \
         --dataset 'trans'
 fi
 
@@ -8,7 +8,7 @@ wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/encoder.json
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/vocab.bpe'
 wget -P './bpe' -N 'https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/dict.txt'
 
-TASK=ts-trans
+TASK=ts-trans-800K
 
 if [ "$1" != "no-preprocess" ]; then
     
@@ -21,7 +21,7 @@ if [ "$1" != "no-preprocess" ]; then
             python -m bpe.multiprocessing_bpe_encoder \
             --encoder-json ./bpe/encoder.json \
             --vocab-bpe ./bpe/vocab.bpe \
-            --inputs ./datasets/trans-10K/trans.${split}.${type} \
+            --inputs ./datasets/trans-800K/trans.${split}.${type} \
             --outputs ./${TASK}/${split}.bpe.${type} \
             --workers 60 \
             --keep-empty;
@@ -45,7 +45,7 @@ fi
 
 # Fine-tuning
 
-TOTAL_NUM_UPDATES=20000
+TOTAL_NUM_UPDATES=40000
 WARMUP_UPDATES=500
 LR=3e-05
 MAX_TOKENS=2048
@@ -72,8 +72,8 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python ./train.py ${TASK}-bin/ \
     --lr-scheduler polynomial_decay --lr $LR --total-num-update $TOTAL_NUM_UPDATES --warmup-updates $WARMUP_UPDATES \
     --update-freq $UPDATE_FREQ \
     --skip-invalid-size-inputs-valid-test \
-    --tensorboard-logdir "./logs/tensorboard/trans-10K/bart-large-pretrained/" \
-    --save-dir "./checkpoints/trans-10K/bart-large-pretrained/" \
+    --tensorboard-logdir "./logs/tensorboard/trans-800K/bart-large-pretrained/" \
+    --save-dir "./checkpoints/trans-800K/bart-large-pretrained/" \
     --find-unused-parameters \
     --bpe "gpt2" \
     --gpt2-encoder-json "./bpe/encoder.json" \

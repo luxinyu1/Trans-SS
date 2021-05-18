@@ -1,12 +1,12 @@
-if [ ! -d "./datasets/trans-es-1M/" ]; then
-    python ./split.py --use-num 1000000 \
-        --output-dir './datasets/trans-es-1M/' \
-        --dataset 'trans_es'
+if [ ! -d "./datasets/trans-es/" ]; then
+    python ./split.py --output-dir './datasets/trans-es/' \
+        --dataset 'trans_es' \
+        --using-full
 fi
 
 TASK=ts-trans-es-mBART
 mBART_DIR=./models/mbart.cc25.v2
-DATASET_DIR=./datasets/trans-es-1M
+DATASET_DIR=./datasets/trans-es
 
 if [ "$1" != "no-preprocess" ]; then
     

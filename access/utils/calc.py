@@ -173,6 +173,13 @@ def syllables_fr(word):
             last = char
         else:
             last = ''
+    
+    if word.endswith('e'):
+        num_syllables -= 1
+    if word.endswith('le'):
+        num_syllables += 1
+    if num_syllables == 0:
+        num_syllables += 1
             
     return num_syllables
 
@@ -188,6 +195,10 @@ def sentence_fkf_fr(sentence):
     avg_words_per_sentence = _words_in_sent / sent_num
     fkf = 207.0 - 73.6*avg_syllables_per_word - 1.015*avg_words_per_sentence
     return fkf
+
+def corpus_fkf_fr(corpus):
+    corpus = ' '.join(corpus)
+    return sentence_fkf_fr(corpus)
 
 @lru_cache(maxsize=100000)
 def syllables_es(word):
@@ -222,6 +233,10 @@ def sentence_fkf_es(sentence):
     avg_words_per_sentence = _words_in_sent / sent_num
     fkf = 206.835 - 60.0*avg_syllables_per_word - 1.02*avg_words_per_sentence
     return fkf
+
+def corpus_fkf_es(corpus):
+    corpus = ' '.join(corpus)
+    return sentence_fkf_es(corpus)
     
 def get_word2freq():
     subtlex = read_xlsx(SUBTLEX_WORD_FREQ_PATH)
