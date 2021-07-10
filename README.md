@@ -2,6 +2,17 @@
 
 This repo contains codes, mined corpora and model checkpoints for paper "An Unsupervised Method for Building Sentence Simplification corpora in Multiple Languages".
 
+## Mined Corpora
+
+### English (816,058 samples)
+https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-1M.tar.gz
+
+### French (621,937 samples)
+https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-fr.tar.gz
+
+### Spanish (487,862 samples)
+https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-es.tar.gz
+
 ## Requirements and Installation
 
 This project is built with standard sentence simplification suite [EASSE](https://github.com/feralvam/easse) and sequence modeling toolkit [fairseq](https://github.com/pytorch/fairseq). Owing to that these two repo are still in fast developing,  we recommend you to use the same version of packages that we use for reproducing our work.
@@ -21,8 +32,8 @@ pip install -r requirements.txt
 1. Download the source code of dependencies from our OSS bin:
 
     ```shell
-    wget -O "easse-master.zip" https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/dependencies/easse-master.zip?Expires=1621655664&OSSAccessKeyId=TMP.3KhkXEk8sEea3ZTxbd31gJTuaBDoR2NwJKuAe1EkoET4T2dzSY4qV3AiTDuvQrSrs7MxJDQjffyE7W8vw39LPU7htfLJtP&Signature=j7ne9Zfrq9QAXWCQ5na%2F5cqk0Hs%3D&versionId=CAEQHBiBgMDk5pvHzBciIDg4NjJmZDUwOTc4MDQ4YmU4NTQ4N2MwYTBjMTcwNDhk&response-content-type=application%2Foctet-stream
-    wget -O "fairseq.tar.gz" https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/dependencies/fairseq.tar.gz?Expires=1621656526&OSSAccessKeyId=TMP.3KhkXEk8sEea3ZTxbd31gJTuaBDoR2NwJKuAe1EkoET4T2dzSY4qV3AiTDuvQrSrs7MxJDQjffyE7W8vw39LPU7htfLJtP&Signature=BozeCiZT9WoC4XazSRa0%2FxhsDk0%3D&versionId=CAEQHBiBgIDrjqTHzBciIGZjNThiNTc5ZmRhNzQ5NjFiZmYwMjFlOTUzYjBiMjA3&response-content-type=application%2Foctet-stream
+    wget -O "easse-master.zip" https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/dependencies/easse-master.zip
+    wget -O "fairseq.tar.gz" https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/dependencies/fairseq.tar.gz
     ```
 
 2. Build from the source code:
