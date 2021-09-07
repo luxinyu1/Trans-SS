@@ -4,14 +4,11 @@ This repo contains codes, mined corpora and model checkpoints for paper "An Unsu
 
 ## Mined Corpora
 
-### English (816,058 samples)
-https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-1M.tar.gz
-
-### French (621,937 samples)
-https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-fr.tar.gz
-
-### Spanish (487,862 samples)
-https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-es.tar.gz
+| Language | # Samples |                             Link                             |
+| :------: | :-------: | :----------------------------------------------------------: |
+| English  |  816,058  | [Download](https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-1M.tar.gz) |
+|  French  |  621,937  | [Download](https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-fr.tar.gz) |
+| Spanish  |  487,862  | [Download](https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-es.tar.gz) |
 
 ## Requirements and Installation
 
@@ -62,3 +59,4 @@ You can also watch the visualized training process using [tensorboard](https://g
 ```shell
 pip install tensorboard
 ```
+

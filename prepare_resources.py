@@ -1,13 +1,11 @@
 from glob import glob
 import os
-import sys
 from pathlib import Path
 import shutil
-import tempfile
 import logging
 import numpy as np
 
-from access.utils.paths import CACHES_DIR, FASTTEXT_EMBEDDINGS_PATH, PHASES, get_dataset_dir, get_data_filepath
+from access.utils.paths import CACHES_DIR, WIKILARGE_URL, PHASES, get_dataset_dir, get_data_filepath
 from access.utils.utils import (download_and_extract, add_newline_at_end_of_file, git_clone, \
                    create_directory_or_skip, write_lines_in_parallel, yield_lines_in_parallel, lock_directory)
 from access.utils.preprocess import replace_lrb_rrb, replace_lrb_rrb_file, normalize_quotes
@@ -96,6 +94,7 @@ def prepare_turkcorpus():
 def prepare_wikilarge():
     dataset = 'wikilarge'
     with create_directory_or_skip(get_dataset_dir(dataset)):
+        download_and_extract(WIKILARGE_URL)
         cache_dir = Path(CACHES_DIR)
         # Only rename files and put them in local directory architecture
         for phase in PHASES:
@@ -110,16 +109,6 @@ def prepare_wikilarge():
                 add_newline_at_end_of_file(new_path)
     return dataset
 
-def prepare_fasttext_embeddings():
-    FASTTEXT_EMBEDDINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with lock_directory(FASTTEXT_EMBEDDINGS_PATH.parent):
-        if FASTTEXT_EMBEDDINGS_PATH.exists():
-            return
-        url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.vec.gz'
-        extracted_path = download_and_extract(url)[0]
-        shutil.move(extracted_path, FASTTEXT_EMBEDDINGS_PATH)
-
 if __name__ == '__main__':
     prepare_turkcorpus()
     prepare_wikilarge()
-    prepare_fasttext_embeddings()
