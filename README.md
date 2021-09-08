@@ -17,6 +17,7 @@ This project is built with standard sentence simplification suite [EASSE](https:
 We provide two methods to install the required dependencies:
 
 - python==3.7
+- torch==1.7.1+cu110
 
 ### Method 1: pip install
 

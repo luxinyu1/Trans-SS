@@ -191,12 +191,12 @@ def download(url, destination_path):
         os.remove(destination_path)
         raise
 
-def download_and_extract(url):
+def download_and_extract(url, target_dir):
     compressed_filename = url.split('/')[-1]
     compressed_filepath = CACHES_DIR / compressed_filename
     download(url, compressed_filepath)
-    logger.info('Extracting...')
-    return extract(compressed_filepath, CACHES_DIR)
+    logger.info('Extracting to {}...'.format(target_dir))
+    return extract(compressed_filepath, target_dir)
 
 def extract(filepath, output_dir):
     # Infer extract method based on extension

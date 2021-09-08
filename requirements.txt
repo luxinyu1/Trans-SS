@@ -19,10 +19,11 @@ decorator==4.4.2
 dill==0.3.3
 docopt==0.6.2
 dyNET==2.1
-easse @ file:///home/lxy/Projects/easse
-en-core-web-sm @ file:///home/lxy/Projects/English-SS/access/resources/en_core_web_sm-2.1.0
+git+git://github.com/feralvam/easse@ba77971b19fae87c7eb472af1e2ce23f9c64ab32#egg=easse
+# en-core-web-sm==3.1.0
 et-xmlfile==1.0.1
--e git+https://github.com/pytorch/fairseq@4a6f89d373dafc50b416092b41c070c304b31698#egg=fairseq
+https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/dependencies/fairseq-1.0.0a0%2B4a6f89d-cp37-cp37m-linux_x86_64.whl
+fairseq
 fastBPE==0.1.0
 filelock==3.0.12
 fsspec==0.9.0
@@ -106,7 +107,6 @@ scipy==1.6.0
 seaborn==0.11.1
 SEMSTR==1.2.2
 sentencepiece==0.1.86
-simalign @ git+https://github.com/cisnlp/simalign.git@b68ef7628e165f4711babb70e75218d141892e82
 six==1.15.0
 sklearn==0.0
 smatch==1.0.1
@@ -121,17 +121,18 @@ texttable==1.6.3
 thinc==7.0.8
 threadpoolctl==2.1.0
 tokenizers==0.9.4
+-f https://download.pytorch.org/whl/torch_stable.html
 torch==1.7.1+cu110
+-f https://download.pytorch.org/whl/torch_stable.html
 torchaudio==0.7.2
+-f https://download.pytorch.org/whl/torch_stable.html
 torchvision==0.8.2+cu110
 tornado==6.1
 tqdm==4.56.0
 traitlets==5.0.5
 transformers==4.2.1
-tseval @ git+https://github.com/facebookresearch/text-simplification-evaluation.git@c86046930a2144406d941a99127eba795eea6296
 TUPA==1.4.2
 typing-extensions==3.7.4.3
-UCCA @ git+https://github.com/louismartin/ucca.git@838a84cd89389d50e9c677ab47242eb56dc2f398
 urllib3==1.26.2
 wasabi==0.8.0
 wcwidth==0.2.5
