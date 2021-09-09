@@ -16,6 +16,9 @@ WIKILARGE_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/wikil
 ASSET_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/asset.zip'
 TURKCORPUS_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/turkcorpus.zip'
 
+BART_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/bart.large.tar.gz'
+MBART_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/mbart/mbart.cc25.v2.tar.gz'
+
 def get_dataset_dir(dataset):
     return DATASETS_DIR / dataset
 

@@ -5,7 +5,7 @@ import shutil
 import logging
 import numpy as np
 
-from access.utils.paths import ASSET_URL, TURKCORPUS_URL, WIKILARGE_URL, get_dataset_dir
+from access.utils.paths import ASSET_URL, TURKCORPUS_URL, WIKILARGE_URL, BART_URL, MBART_URL, MODELS_DIR, get_dataset_dir
 from access.utils.utils import download_and_extract, create_directory_or_skip
 
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -31,7 +31,14 @@ def prepare_wikilarge():
         download_and_extract(WIKILARGE_URL, get_dataset_dir(dataset))
     return dataset
 
+def prepare_models(url_list):
+    for model_url in url_list:
+        download_and_extract(model_url, MODELS_DIR)
+
 if __name__ == '__main__':
+    model_urls = [BART_URL, MBART_URL]
+
     prepare_asset()
     prepare_turkcorpus()
     prepare_wikilarge()
+    prepare_models(model_urls)
