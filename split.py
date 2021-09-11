@@ -7,8 +7,8 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 import argparse
-from access.utils.paths import DATA_DIR, DATASETS_DIR
-from access.utils.calc import sentence_fkf, sentence_fkgl
+from utils.paths import DATA_DIR, DATASETS_DIR
+from utils.calc import sentence_fkf, sentence_fkgl
 from pathlib import Path
 
 logging.basicConfig(

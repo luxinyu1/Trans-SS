@@ -1,8 +1,8 @@
-from access.utils.utils import get_data_filepath, get_dataset_dir, read_lines
+from utils.utils import get_data_filepath, get_dataset_dir, read_lines
 from easse.report import get_all_scores
 from easse.sari import corpus_sari
 
-from access.utils.calc import corpus_fkf_fr, corpus_fkf_es
+from utils.calc import corpus_fkf_fr, corpus_fkf_es
 import nltk
 import random
 import numpy as np

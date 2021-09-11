@@ -11,8 +11,8 @@ from pathlib import Path
 import numpy as np
 from shutil import copyfile
 
-from access.utils.paths import CHECKPOINT_DIR, REPO_DIR
-from access.utils.utils import get_data_filepath, get_dataset_dir, read_lines, create_directory_or_skip
+from utils.paths import CHECKPOINT_DIR, REPO_DIR
+from utils.utils import get_data_filepath, get_dataset_dir, read_lines, create_directory_or_skip
 from easse.report import get_all_scores, get_html_report
 from fairseq.data import encoders
 from fairseq_cli.interactive import buffered_read, make_batches

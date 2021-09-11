@@ -18,9 +18,25 @@ TURKCORPUS_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/turk
 
 BART_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/bart.large.tar.gz'
 MBART_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/mbart/mbart.cc25.v2.tar.gz'
+WMT_19_DE_EN_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/wmt19.de-en.joined-dict.ensemble.tar.gz'
+
+
+DE_EN_TRANS_RESULT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/de-en_trans_result.tar.gz'
+EN_ES_TRANS_RESULT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/en-es_trans_result.tar.gz'
+EN_FR_TRANS_RESULT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/en-fr_trans_result.tar.gz'
+
+TRANS_EN_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-1M.tar.gz'
+TRANS_FR_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-fr.tar.gz'
+TRANS_ES_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-es.tar.gz'
+
+WMT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/wmt_en_de.tgz'
+EUROPARL_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/training-parallel-europarl-v7.tgz'
 
 def get_dataset_dir(dataset):
     return DATASETS_DIR / dataset
+
+def get_data_dir(data):
+    return DATA_DIR / data
 
 def get_data_filepath(dataset, phase, language, i=None):
     suffix = ''

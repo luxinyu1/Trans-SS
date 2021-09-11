@@ -354,8 +354,8 @@ def get_training_stats(stats: Dict[str, Any]) -> Dict[str, Any]:
 
 def sari_validate(cfg: DictConfig, trainer: Trainer, task: tasks.FairseqTask, epoch_itr, subsets: List[str]) -> List[Optional[float]]:
     
-    from access.utils.paths import CHECKPOINT_DIR, REPO_DIR
-    from access.utils.utils import get_data_filepath, get_dataset_dir, read_lines
+    from utils.paths import CHECKPOINT_DIR, REPO_DIR
+    from utils.utils import get_data_filepath, get_dataset_dir, read_lines
     from easse.report import get_all_scores
     from fairseq.data import encoders
     from fairseq_cli.interactive import buffered_read, make_batches

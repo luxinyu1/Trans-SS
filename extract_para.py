@@ -1,4 +1,4 @@
-from access.utils.paths import DATA_DIR
+from utils.paths import DATA_DIR
 import linecache
 
 from tqdm import tqdm

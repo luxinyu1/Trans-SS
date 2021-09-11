@@ -1,5 +1,5 @@
-from access.utils.utils import get_data_filepath, get_dataset_dir, read_lines
-from access.utils.paths import DATASETS_DIR, DATA_DIR
+from utils.utils import get_data_filepath, get_dataset_dir, read_lines
+from utils.paths import DATASETS_DIR, DATA_DIR
 
 # check if the training set contains the test set samples
 

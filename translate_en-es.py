@@ -9,7 +9,7 @@ import argparse
 from pathlib import Path
 from torch.utils.data import SequentialSampler, DataLoader
 
-from access.utils.paths import REPO_DIR, DATA_DIR
+from utils.paths import REPO_DIR, DATA_DIR
 
 logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",

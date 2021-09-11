@@ -1,56 +1,9 @@
-import Levenshtein
-import nltk
 import re
-import numpy as np
 from nltk.corpus import cmudict, stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 from functools import lru_cache
 
-from .paths import FASTTEXT_EMBEDDINGS_PATH, SUBTLEX_WORD_FREQ_PATH
-from .utils import yield_lines, read_xlsx
-from .text import remove_punctuation_tokens, remove_stopwords, to_words, spacy_process
-
 d = cmudict.dict()
-
-@lru_cache(maxsize=1)
-def get_word2rank(vocab_size=np.inf):
-    # TODO: Decrease vocab size or load from smaller file
-    word2rank = {}
-    line_generator = yield_lines(FASTTEXT_EMBEDDINGS_PATH)
-    next(line_generator)  # Skip the first line (header)
-    for i, line in enumerate(line_generator):
-        if (i + 1) > vocab_size:
-            break
-        word = line.split(' ')[0]
-        word2rank[word] = i
-    return word2rank
-
-def get_rank(word):
-    return get_word2rank().get(word, len(get_word2rank()))
-
-def get_log_rank(word):
-    return np.log(1 + get_rank(word))
-
-def get_lexical_complexity_score(sentence):
-    words = to_words(remove_stopwords(remove_punctuation_tokens(sentence)))
-    words = [word for word in words if word in get_word2rank()]
-    if len(words) == 0:
-        return np.log(1 + len(get_word2rank()))  # TODO: This is completely arbitrary
-    return np.quantile([get_log_rank(word) for word in words], 0.75)
-
-def get_levenshtein_similarity(complex_sentence, simple_sentence):
-    return Levenshtein.ratio(complex_sentence, simple_sentence)
-
-def get_dependency_tree_depth(sentence):
-    def get_subtree_depth(node):
-        if len(list(node.children)) == 0:
-            return 0
-        return 1 + max([get_subtree_depth(child) for child in node.children])
-
-    tree_depths = [get_subtree_depth(spacy_sentence.root) for spacy_sentence in spacy_process(sentence).sents]
-    if len(tree_depths) == 0:
-        return 0
-    return max(tree_depths)
 
 @lru_cache(maxsize=100000)
 def nsyl(word):
@@ -237,19 +190,6 @@ def sentence_fkf_es(sentence):
 def corpus_fkf_es(corpus):
     corpus = ' '.join(corpus)
     return sentence_fkf_es(corpus)
-    
-def get_word2freq():
-    subtlex = read_xlsx(SUBTLEX_WORD_FREQ_PATH)
-    word2freq = {}
-    for line in subtlex:
-        word = line[0]
-        freq = line[1]
-        if word not in word2freq:
-            word2freq[word] = int(freq)
-    return word2freq
-    
-def get_freq(word):
-    return get_word2freq.get(word)
 
 def get_corpus_vocab_size(corpus):
     words = []

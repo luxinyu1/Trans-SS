@@ -1,5 +1,5 @@
-from access.utils.paths import DATA_DIR
-from access.utils.calc import sentence_fkf, count_words_in_sentence
+from utils.paths import DATA_DIR
+from utils.calc import sentence_fkf, count_words_in_sentence
 from easse.fkgl import corpus_fkgl
 from sacrebleu import corpus_bleu
 from tqdm import tqdm

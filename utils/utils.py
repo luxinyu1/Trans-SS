@@ -1,5 +1,4 @@
 import os
-import re
 import git
 import sys
 import time
