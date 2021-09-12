@@ -303,7 +303,7 @@ def git_clone(url, output_dir, overwrite=True):
     if Path(output_dir).exists():
         shutil.rmtree(output_dir)
     git.Repo.clone_from(url, output_dir)
-    logger.info('Cloning from {url}...')
+    logger.info('Cloning from {}...'.format(url))
     
 @contextmanager
 def lock_directory(dir_path):

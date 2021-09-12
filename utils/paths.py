@@ -1,7 +1,7 @@
 from itertools import product
 from pathlib import Path
 
-REPO_DIR = Path(__file__).resolve().parent.parent.parent
+REPO_DIR = Path(__file__).resolve().parent.parent
 CHECKPOINT_DIR = REPO_DIR / 'checkpoints'
 DATASETS_DIR = REPO_DIR / 'datasets'
 MODELS_DIR = REPO_DIR / 'models'
@@ -19,7 +19,8 @@ TURKCORPUS_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/turk
 BART_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/bart.large.tar.gz'
 MBART_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/mbart/mbart.cc25.v2.tar.gz'
 WMT_19_DE_EN_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/wmt19.de-en.joined-dict.ensemble.tar.gz'
-
+WMT_14_EN_FR_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/wmt14.en-fr.joined-dict.transformer.tar.bz2'
+EN_ES_TRANS_MODEL_GIT_URL = 'https://huggingface.co/mrm8488/mbart-large-finetuned-opus-en-es-translation'
 
 DE_EN_TRANS_RESULT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/de-en_trans_result.tar.gz'
 EN_ES_TRANS_RESULT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/en-es_trans_result.tar.gz'
@@ -29,7 +30,7 @@ TRANS_EN_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/tr
 TRANS_FR_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-fr.tar.gz'
 TRANS_ES_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-es.tar.gz'
 
-WMT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/wmt_en_de.tgz'
+WMT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/wmt_en_de.zip'
 EUROPARL_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/data/training-parallel-europarl-v7.tgz'
 
 def get_dataset_dir(dataset):

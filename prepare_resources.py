@@ -2,11 +2,11 @@ import logging
 import shutil
 import glob
 
-from utils.paths import ASSET_URL, CACHES_DIR, DATA_DIR, DATASETS_DIR, EUROPARL_URL, TRANS_EN_URL, TRANS_ES_URL, TRANS_ES_URL, TRANS_FR_URL, \
+from utils.paths import ASSET_URL, CACHES_DIR, DATA_DIR, DATASETS_DIR, EN_ES_TRANS_MODEL_GIT_URL, EUROPARL_URL, TRANS_EN_URL, TRANS_ES_URL, TRANS_ES_URL, TRANS_FR_URL, \
                                 TURKCORPUS_URL, WIKILARGE_URL, BART_URL, MBART_URL, MODELS_DIR, \
-                                DE_EN_TRANS_RESULT_URL, EN_ES_TRANS_RESULT_URL, EN_FR_TRANS_RESULT_URL, WMT_URL,  \
+                                DE_EN_TRANS_RESULT_URL, EN_ES_TRANS_RESULT_URL, EN_FR_TRANS_RESULT_URL, WMT_14_EN_FR_URL, WMT_19_DE_EN_URL, WMT_URL,  \
                                 get_dataset_dir, get_data_dir
-from utils.utils import download_and_extract, create_directory_or_skip
+from utils.utils import download_and_extract, create_directory_or_skip, git_clone
 
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt = '%m/%d/%Y %H:%M:%S',
@@ -55,8 +55,8 @@ def prepare_trans_corpora():
     with create_directory_or_skip(get_data_dir('europarl_en_fr')), \
         create_directory_or_skip(get_data_dir('europarl_en_es')):
 
-        en_fr = glob.glob(europarl_cache_dir / '*.fr-en.*')
-        en_es = glob.glob(europarl_cache_dir / '*.es-en.*')
+        en_fr = glob.glob(str(europarl_cache_dir / 'training' / r'*.fr-en.*'))
+        en_es = glob.glob(str(europarl_cache_dir / 'training' / r'*.es-en.*'))
         for p in en_fr:
             shutil.copy(p, get_data_dir('europarl_en_fr'))
         for p in en_es:
@@ -64,13 +64,17 @@ def prepare_trans_corpora():
 
 if __name__ == '__main__':
     
-    model_urls = [BART_URL, MBART_URL]
+    model_urls = [BART_URL, MBART_URL, WMT_14_EN_FR_URL, WMT_19_DE_EN_URL]
     trans_result_urls = [DE_EN_TRANS_RESULT_URL, EN_ES_TRANS_RESULT_URL, EN_FR_TRANS_RESULT_URL]
     mined_datasets_urls = [TRANS_EN_URL, TRANS_ES_URL, TRANS_FR_URL]
 
     prepare_asset()
     prepare_turkcorpus()
     prepare_wikilarge()
+    
     prepare_models(model_urls)
+    git_clone(EN_ES_TRANS_MODEL_GIT_URL, MODELS_DIR)
+    
     prepare_trans_result(trans_result_urls)
+    prepare_trans_corpora()
     prepare_mined_datasets(mined_datasets_urls)
