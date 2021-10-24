@@ -10,6 +10,16 @@ This repo contains codes, mined corpora, and model checkpoints for the paper "An
 |  French  |  621,937  | [Download](https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-fr.tar.gz) |
 | Spanish  |  487,862  | [Download](https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/trans-es.tar.gz) |
 
+## Models
+
+| Model Architecture | Language |                             Link                             |
+| :----------------: | :------: | :----------------------------------------------------------: |
+|    Transformer     | English  | [Download](https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/models/transformer-en.zip) |
+|      ConvS2S       | English  | [Download](https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/models/fconv-en.zip) |
+|        BART        | English  | [Download](https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/models/bart-en-1.zip)<br/>[Download](https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/models/bart-en-2.zip) |
+
+The model output files could be found in ```./sys_outputs/``` directory. 
+
 ## Requirements and Installation
 
 This project is built with standard sentence simplification suite [EASSE](https://github.com/feralvam/easse) and sequence modeling toolkit [fairseq](https://github.com/pytorch/fairseq). Owing to that these two repo are still in fast developing,  we strongly recommend you to use the same version of packages that we use for reproducing our work.
@@ -17,7 +27,7 @@ This project is built with standard sentence simplification suite [EASSE](https:
 We provide two methods to install the required dependencies:
 
 - python==3.7
-- torch==1.7.1+cu110
+- torch==1.7.1
 
 ### Method 1: pip install
 
@@ -136,4 +146,4 @@ If you find our corpora or paper useful, please consider citing:
 
 ## Acknowledgements
 
-Some codes in this repo is based on [access](https://github.com/facebookresearch/access). We thank the developers who contributed to the repo. 
+Some code in this repo is based on [access](https://github.com/facebookresearch/access). Thank for its wonderful works.

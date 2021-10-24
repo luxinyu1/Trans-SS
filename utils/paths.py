@@ -21,6 +21,7 @@ MBART_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/mbart/mbart.cc25.v2.t
 WMT_19_DE_EN_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/wmt19.de-en.joined-dict.ensemble.tar.gz'
 WMT_14_EN_FR_URL = 'https://dl.fbaipublicfiles.com/fairseq/models/wmt14.en-fr.joined-dict.transformer.tar.bz2'
 EN_ES_TRANS_MODEL_GIT_URL = 'https://huggingface.co/mrm8488/mbart-large-finetuned-opus-en-es-translation'
+GPT2_LARGE_MODEL_GIT_URL = 'https://huggingface.co/gpt2-large/'
 
 DE_EN_TRANS_RESULT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/de-en_trans_result.tar.gz'
 EN_ES_TRANS_RESULT_URL = 'https://lxylab.oss-cn-shanghai.aliyuncs.com/Trans-SS/datasets/en-es_trans_result.tar.gz'

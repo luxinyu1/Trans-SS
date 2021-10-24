@@ -3,7 +3,7 @@ import git
 import sys
 import time
 import pandas as pd
-import inspect
+from urllib.parse import urlparse
 import logging
 import shutil
 import tempfile
@@ -25,25 +25,6 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt = '%m/%d/%Y %H:%M:%S',
                     level = logging.INFO)
-
-def safe_division(a, b):
-    if b == 0:
-        return 0
-    return a / b
-
-def add_dicts(*dicts):
-    return {k: v for dic in dicts for k, v in dic.items()}
-
-
-def get_default_args(func):
-    signature = inspect.signature(func)
-    return {k: v.default for k, v in signature.parameters.items() if v.default is not inspect.Parameter.empty}
-
-
-def get_allowed_kwargs(func, *args, **kwargs):
-    expected_args = inspect.getargspec(func).args
-    allowed_kwargs = expected_args[len(args):]
-    return {k: v for k, v in kwargs.items() if k in allowed_kwargs}
 
 @contextmanager
 def open_files(filepaths, mode='r'):
@@ -166,6 +147,9 @@ class create_directory_or_skip(AbstractContextManager):
                 logger.info(f'Error: Rolling back creation of directory {self.dir_path}')
                 shutil.rmtree(self.dir_path)
                 return False  # Reraise the exception
+
+class SkipWithBlock(Exception):
+    pass
 
 def reporthook(count, block_size, total_size):
     # Download progress bar
@@ -300,9 +284,11 @@ def add_newline_at_end_of_file(file_path):
         f.write('\n')
 
 def git_clone(url, output_dir, overwrite=True):
-    if Path(output_dir).exists():
-        shutil.rmtree(output_dir)
-    git.Repo.clone_from(url, output_dir)
+    path_name = filter(lambda x: x!='', urlparse(url).path.split("/"))
+    repo_name = list(path_name)[-1]
+    if Path(output_dir / repo_name).exists():
+        shutil.rmtree(output_dir / repo_name)
+    git.Repo.clone_from(url, output_dir / repo_name)
     logger.info('Cloning from {}...'.format(url))
     
 @contextmanager
@@ -328,9 +314,6 @@ def open_with_lock(filepath, mode):
         flock(f, LOCK_EX)
         yield f
         flock(f, LOCK_UN)
-        
-class SkipWithBlock(Exception):
-    pass
 
 def delete_files(filepaths):
     for filepath in filepaths:

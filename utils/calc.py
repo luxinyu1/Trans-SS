@@ -2,6 +2,11 @@ import re
 from nltk.corpus import cmudict, stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 from functools import lru_cache
+import math
+import torch
+
+from utils.paths import DATA_DIR
+from .utils import read_lines
 
 d = cmudict.dict()
 
@@ -32,6 +37,9 @@ def syllables(word):
 
 def is_punctuation(token):
     return re.match('^[.,\/#!$%\'\^&\*;:{}=\-_`~()]$', token) is not None
+
+def is_blank_space(token):
+    return re.match('\s+', token) is not None
 
 def sentence_fkgl(sentence):
     sent_tokenized = word_tokenize(sentence)
@@ -187,9 +195,61 @@ def sentence_fkf_es(sentence):
     fkf = 206.835 - 60.0*avg_syllables_per_word - 1.02*avg_words_per_sentence
     return fkf
 
+def sentence_gfi(sentence):
+    sent_num = len(sent_tokenize(sentence))
+    sent_tokenized = word_tokenize(sentence)
+    _is_long_word = lambda w: len(w) > 7 # GFI defines that "longWords" are words longer than 7 characters
+    words_in_sent = [token for token in sent_tokenized if not is_punctuation(token)]
+    _words_in_sent = len(words_in_sent)
+    long_words_in_sent = [w for w in words_in_sent if _is_long_word(w)]
+    _long_words_in_sent = len(long_words_in_sent)
+    return 0.4 * (_words_in_sent/sent_num + 100*_long_words_in_sent/_words_in_sent)
+
+def sentence_ari(sentence):
+    sent_num = len(sent_tokenize(sentence))
+    characters_in_sent = [ch for ch in sentence if not is_punctuation(ch) and not is_blank_space(ch)]
+    _characters_in_sent = len(characters_in_sent)
+    sent_tokenized = word_tokenize(sentence)
+    words_in_sent = [token for token in sent_tokenized if not is_punctuation(token)]
+    _words_in_sent = len(words_in_sent)
+    return 4.71 * (_characters_in_sent/_words_in_sent) + 0.5 * (_words_in_sent/sent_num) - 21.43
+
+def sentence_dcrf(sentence):
+    dc3000 = read_lines(DATA_DIR / 'dc_3000.txt')
+    _is_difficult = lambda w: w.lower() not in dc3000
+    sent_num = len(sent_tokenize(sentence))
+    sent_tokenized = word_tokenize(sentence)
+    words_in_sent = [token for token in sent_tokenized if not is_punctuation(token)]
+    _words_in_sent = len(words_in_sent)
+    diff_words = [w for w in words_in_sent if _is_difficult(w)]
+    _diff_words = len(diff_words)
+    dcrf = 0.1579*(_diff_words/_words_in_sent*100) + 0.0496*(_words_in_sent/sent_num)
+    if _diff_words/_words_in_sent > 0.05:
+        dcrf += 3.6365
+    return dcrf
+
+def sentence_smog(sentence):
+    # "numberOfPolysyllables" is the number of words with three or more syllables
+    sent_num = len(sent_tokenize(sentence))
+    sent_tokenized = word_tokenize(sentence)
+    words_in_sent = [token for token in sent_tokenized if not is_punctuation(token)]
+    poly_syllables = [w for w in words_in_sent if syllables(w)[0] >= 3]
+    _poly_syllables = len(poly_syllables)
+    return 1.0430*math.sqrt(_poly_syllables*30/sent_num) + 3.1291
+
 def corpus_fkf_es(corpus):
     corpus = ' '.join(corpus)
     return sentence_fkf_es(corpus)
+
+def ppl(model, tokenizer, sentence):
+    # It is very rare that we encounter sentence's length greater than the fixed max_seq_length of models,
+    # so here we don't apply the sliding-window strategy
+    encodings = tokenizer(sentence, return_tensors='pt')
+    input_ids = encodings["input_ids"].to("cuda")
+    with torch.no_grad():
+        loss = model(input_ids, labels=input_ids)[0]
+        ppl = math.exp(loss)
+    return ppl
 
 def get_corpus_vocab_size(corpus):
     words = []
