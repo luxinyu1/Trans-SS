@@ -136,11 +136,21 @@ usage: test.py [-h] --model-name MODEL_NAME --dataset-name DATASET_NAME --task-n
 If you find our corpora or paper useful, please consider citing:
 
 ```
-@article{lu2021unsupervised,
-  title={An Unsupervised Method for Building Sentence Simplification Corpora in Multiple Languages},
-  author={Lu, Xinyu and Qiang, Jipeng and Li, Yun and Yuan, Yunhao and Zhu, Yi},
-  journal={arXiv preprint arXiv:2109.00165},
-  year={2021}
+@inproceedings{lu-etal-2021-unsupervised-method,
+    title = "An Unsupervised Method for Building Sentence Simplification Corpora in Multiple Languages",
+    author = "Lu, Xinyu  and
+      Qiang, Jipeng  and
+      Li, Yun  and
+      Yuan, Yunhao  and
+      Zhu, Yi",
+    booktitle = "Findings of the Association for Computational Linguistics: EMNLP 2021",
+    month = nov,
+    year = "2021",
+    address = "Punta Cana, Dominican Republic",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.findings-emnlp.22",
+    pages = "227--237",
+    abstract = "The availability of parallel sentence simplification (SS) is scarce for neural SS modelings. We propose an unsupervised method to build SS corpora from large-scale bilingual translation corpora, alleviating the need for SS supervised corpora. Our method is motivated by the following two findings: neural machine translation model usually tends to generate more high-frequency tokens and the difference of text complexity levels exists between the source and target language of a translation corpus. By taking the pair of the source sentences of translation corpus and the translations of their references in a bridge language, we can construct large-scale pseudo parallel SS data. Then, we keep these sentence pairs with a higher complexity difference as SS sentence pairs. The building SS corpora with an unsupervised approach can satisfy the expectations that the aligned sentences preserve the same meanings and have difference in text complexity levels. Experimental results show that SS methods trained by our corpora achieve the state-of-the-art results and significantly outperform the results on English benchmark WikiLarge.",
 }
 ```
 
